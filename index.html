@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ngStars</title>
+	<link rel="stylesheet" type="text/css" href="node_modules/angular-material/angular-material.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" type="text/css" href="CSS/style.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      type="text/css" rel="stylesheet">
+</head>
+
+
+	<body ng-app="ngStars" ng-controller="starsCtrl">
+
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<p><strong>ngStars</strong></p>
+			<md-button ng-click="openSidebar()">
+				<md-icon class="material-icons">perm_identity</md-icon>
+				New Star
+			</md-button>
+			<md-button ng-click="showFilters = true">
+				<md-icon class="material-icons">filter_drama</md-icon>
+				Filters
+			</md-button>
+			<md-button ng-click="openCart()">
+				<md-icon class="material-icons">shopping_cart</md-icon>
+				Cart
+			</md-button>
+		</div>
+	</md-toolbar>
+
+	<div class="filters" layout="row" layout-align="center center" ng-show="showFilters">
+		<md-input-container>
+			<label>Enter Search Term</label>
+			<input type="text" ng-model="starsFilter">
+		</md-input-container>
+
+		<md-input-container>
+			<label>Category</label>
+			<md-select ng-model="category">
+				<md-option ng-repeat="category in categories" value="{{ category }}">
+					{{ category }}
+				</md-option>
+			</md-select>
+		</md-input-container>
+
+		<md-input-container>
+			<md-button class="md-warn"
+			ng-click="starsFilter = ''; category = ''">Clear</md-button>
+		</md-input-container>
+
+	</div>
+	<!-- shopping cart slidenav right -->
+	<md-sidenav class="md-sidenav-right md-whiteframe-z2"
+		md-component-id="right">
+		<md-toolbar>
+			<h1 class="md-toolbar-tools">Shopping Cart</h1>
+		</md-toolbar>
+
+	<md-content layout-padding>
+		<form>
+			<md-input-container>
+				<label for="Item">Item</label>
+				<input type="text" id="title"
+						ng-model="star.title"
+					md-autofocus>
+			</md-input-container>
+			<md-input-container>
+				<label for="quantity">quantity</label>
+				<input type="text" id="price" ng-model="star.price">
+			</md-input-container>
+
+			<div>
+				<label for="Subtitle">Subtitle</label>
+				<input type="text" id="image" ng-model="star.image">
+			</div>
+			<br>
+			<md-button ng-if="!editing" ng-click="closeCart()" class="md-primary">
+				continue shopping
+			</md-button>
+
+			<md-button ng-click="closeSidebar()" class="md-warn">
+				check out
+			</md-button>
+		</form>
+	</md-content>
+</md-sidenav>
+
+<!-- add a star sidenav left -->
+	<md-sidenav class="md-sidenav-left md-whiteframe-z5"
+		md-component-id="left">
+		<md-toolbar>
+			<h1 class="md-toolbar-tools">Add a Star</h1>
+		</md-toolbar>
+
+		<md-content layout-padding>
+			<form>
+				<md-input-container>
+					<label for="title">Title</label>
+					<input type="text" id="title"
+							ng-model="star.title"
+						md-autofocus>
+				</md-input-container>
+				<md-input-container>
+					<label for="price">Price</label>
+					<input type="text" id="price" ng-model="star.price">
+				</md-input-container>
+				<md-input-container>
+					<label for="description">Description</label>
+					<textarea type="text" id="description" ng-model="star.description">
+
+					</textarea>
+				</md-input-container>
+				<md-input-container>
+					<label for="image">Image Link</label>
+					<input type="text" id="image" ng-model="star.image">
+				</md-input-container>
+				<br>
+				<md-button ng-if="!editing" ng-click="saveStar(star)" class="md-primary">
+					Save
+				</md-button>
+				<md-button ng-click="saveEdit()" ng-if="editing" class="md-primary">
+					Save Edit
+				</md-button>
+				<md-button ng-click="closeSidebar()" class="md-warn">
+					Cancel
+				</md-button>
+			</form>
+		</md-content>
+
+	</md-sidenav>
+
+
+	<md-content class="md-padding" layout="row" layout-wrap>
+		<md-card ng-repeat="star in stars |
+							filter: starsFilter |
+							filter: category" flex="30">
+			<img ng-src="{{ star.image }}"/>
+			<md-card-content>
+				<div class="star-info" ng-show="!showContact">
+					<h2 class="md-title">{{ star.title }}</h2>
+					<h2>{{ star.posted | date}}</h2>
+					<h3>{{ star.price | currency }}</h3>
+					<p>{{ star.description}}</p>
+				</div>
+
+				<div class="star-contact" ng-show="showContact">
+					<p><md-icon class="mdi mdi-account"></md-icon>{{ star.contact.name}}</p>
+					<p><md-icon class="mdi mdi-phone"></md-icon>{{ star.contact.phone}}</p>
+					<p><md-icon class="mdi mdi-email"></md-icon>{{ star.contact.email}}</p>
+				</div>
+
+				<div layout="row">
+					<md-button
+						ng-click="showContact = true"
+						ng-show="!showContact">Contact
+					</md-button>
+					<md-button
+						ng-click="showContact = false"
+						ng-show="showContact">Details
+					</md-button>
+					<md-button
+						ng-click="showAdmin = true"
+						ng-show="!showAdmin">Admin
+					</md-button>
+					<md-button
+						ng-click="showAdmin = false"
+						ng-show="showAdmin">Close
+					</md-button>
+
+
+				</div>
+
+
+				<div class="star-admin" ng-if="showAdmin">
+					<h3>Admin</h3>
+					<div layout="row">
+						<md-button ng-click="editStar(star)" class="md-primary">Edit</md-button>
+						<md-button ng-click="deleteStar($event, star)" class="md-warn">Delete</md-button>
+					</div>
+				</div>
+				<!-- add a buy button -->
+
+       <div class="shoppingCart">
+				<div layout = "row">
+					<md-button
+					ng-click="getPrice(star)"
+					>Add to bag
+					</md-button>
+				</div>
+			 </div>
+
+			</md-card-content>
+		</md-card>
+	</md-content>
+
+
+
+
+	<script src="node_modules/angular/angular.min.js"></script>
+
+	<script src="node_modules/angular-animate/angular-animate.js"></script>
+	<script src="node_modules/angular-aria/angular-aria.js"></script>
+	<script src="node_modules/angular-material/angular-material.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.4/lodash.min.js"></script>
+
+
+	<script src="scripts/app.js"></script>
+	<script src="components/stars.ctrl.js"></script>
+	<script src="components/stars.fac.js"></script>
+
+
+	</body>
+
+
+</html>
